@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schema Generator — JSON-LD for SEO</title>
+<meta name="description" content="Generate production-ready JSON-LD structured data for SEO. Supports LocalBusiness, Organization, Service, FAQ, Breadcrumb, Product, and Article schemas.">
+<meta property="og:title" content="JSON-LD Schema Generator — For SEO Agencies">
+<meta property="og:description" content="Generate production-ready structured data markup in seconds. Free, open-source, no signup.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#09090b;
+  --bg-secondary:#111114;
+  --bg-tertiary:#18181b;
+  --bg-input:#0c0c0f;
+  --bg-elevated:#1e1e23;
+  --border:#27272a;
+  --border-subtle:#1f1f23;
+  --border-focus:#6366f1;
+  --text-primary:#fafafa;
+  --text-secondary:#a1a1aa;
+  --text-muted:#52525b;
+  --accent:#6366f1;
+  --accent-hover:#818cf8;
+  --accent-dim:rgba(99,102,241,.1);
+  --accent-glow:rgba(99,102,241,.15);
+  --danger:#ef4444;
+  --danger-dim:rgba(239,68,68,.1);
+  --success:#22c55e;
+  --success-dim:rgba(34,197,94,.1);
+  --warning:#f59e0b;
+  --warning-dim:rgba(245,158,11,.1);
+  --info:#3b82f6;
+  --info-dim:rgba(59,130,246,.1);
+  --json-key:#a5b4fc;
+  --json-string:#34d399;
+  --json-number:#fbbf24;
+  --json-bool:#f472b6;
+  --json-null:#71717a;
+  --json-bracket:#71717a;
+  --radius:8px;
+  --radius-lg:12px;
+  --radius-xl:16px;
+  --font-sans:'DM Sans',system-ui,-apple-system,sans-serif;
+  --font-mono:'DM Mono','Fira Code',monospace;
+}
+html{font-size:14.5px;scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg-primary);color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* ── HEADER ── */
+.header{padding:1rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:var(--bg-secondary)}
+.header-left{display:flex;align-items:center;gap:.75rem}
+.header-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#a855f7);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#fff;flex-shrink:0}
+.header h1{font-size:1.15rem;font-weight:800;letter-spacing:-.03em}
+.header h1 span{background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-badges{display:flex;gap:.4rem;align-items:center}
+.badge{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.2rem .55rem;border-radius:20px;line-height:1.4}
+.badge-schemas{background:var(--accent-dim);color:var(--accent)}
+.badge-google{background:var(--success-dim);color:var(--success)}
+.header-right{display:flex;gap:.5rem;align-items:center}
+.header-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .75rem;font-size:.75rem;font-weight:600;color:var(--text-secondary);background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:var(--font-sans);transition:all .2s;text-decoration:none}
+.header-btn:hover{border-color:var(--accent);color:var(--accent)}
+.header-btn svg{width:14px;height:14px}
+
+/* ── TABS ── */
+.tabs-wrapper{border-bottom:1px solid var(--border);background:var(--bg-secondary)}
+.tabs{display:flex;gap:0;padding:0 2rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{position:relative;padding:.75rem 1.15rem;font-size:.77rem;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:var(--font-sans);letter-spacing:.01em}
+.tab:hover{color:var(--text-secondary)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .tab-dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-left:5px;vertical-align:middle}
+.tab .tab-dot.green{background:var(--success)}
+
+/* ── MAIN LAYOUT ── */
+.main{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 100px)}
+.panel{padding:1.75rem;overflow-y:auto}
+.panel-form{border-right:1px solid var(--border)}
+.panel-output{background:var(--bg-secondary);display:flex;flex-direction:column}
+
+/* ── GOOGLE TIP ── */
+.google-tip{display:flex;align-items:flex-start;gap:.6rem;padding:.7rem .85rem;background:var(--info-dim);border:1px solid rgba(59,130,246,.15);border-radius:var(--radius);margin-bottom:1.5rem;font-size:.75rem;color:var(--info);line-height:1.5}
+.google-tip svg{flex-shrink:0;margin-top:1px}
+.google-tip strong{color:#60a5fa}
+
+/* ── FORM STYLES ── */
+.form-section{margin-bottom:1.5rem}
+.form-section-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.85rem;padding-bottom:.45rem;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:.5rem}
+.form-section-title::before{content:'';width:3px;height:12px;background:linear-gradient(to bottom,var(--accent),#a855f7);border-radius:2px}
+
+.form-group{margin-bottom:.85rem}
+.form-label{display:flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:.3rem}
+.form-label .req{color:var(--danger);font-size:.85em}
+.form-label .label-tag{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.1rem .35rem;border-radius:3px;line-height:1.3}
+.label-tag.recommended{background:var(--success-dim);color:var(--success)}
+.label-tag.google{background:var(--warning-dim);color:var(--warning)}
+
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:.55rem .75rem;
+  background:var(--bg-input);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--text-primary);
+  font-family:var(--font-sans);font-size:.83rem;
+  transition:border-color .2s,box-shadow .2s;outline:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px var(--accent-dim)}
+.form-input.error,.form-select.error,.form-textarea.error{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-dim)}
+.form-textarea{resize:vertical;min-height:70px;font-family:var(--font-sans)}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .65rem center}
+.form-select option{background:var(--bg-secondary);color:var(--text-primary)}
+.form-hint{font-size:.7rem;color:var(--text-muted);margin-top:.2rem}
+.form-error{font-size:.7rem;color:var(--danger);margin-top:.2rem;display:none}
+.form-error.visible{display:block}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem}
+.form-row-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.65rem}
+
+/* ── DYNAMIC ROWS ── */
+.dynamic-list{display:flex;flex-direction:column;gap:.6rem}
+.dynamic-row{display:flex;gap:.5rem;align-items:flex-start;padding:.7rem;background:var(--bg-tertiary);border-radius:var(--radius);border:1px solid var(--border-subtle);transition:border-color .2s}
+.dynamic-row:hover{border-color:var(--border)}
+.dynamic-row .dynamic-fields{flex:1;display:flex;flex-direction:column;gap:.45rem}
+.dynamic-row .dynamic-fields .form-row{margin:0}
+.dynamic-row .row-num{font-size:.65rem;font-weight:700;color:var(--text-muted);min-width:18px;padding-top:.55rem;font-family:var(--font-mono)}
+.btn-remove{background:var(--danger-dim);border:1px solid transparent;color:var(--danger);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;margin-top:.35rem;transition:all .2s;flex-shrink:0;line-height:1}
+.btn-remove:hover{background:var(--danger);color:#fff}
+.btn-add{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .85rem;font-size:.75rem;font-weight:600;color:var(--accent);background:var(--accent-dim);border:1px solid transparent;border-radius:var(--radius);cursor:pointer;font-family:var(--font-sans);transition:all .2s;margin-top:.4rem}
+.btn-add:hover{background:var(--accent);color:#fff}
+
+/* ── BUTTON BAR ── */
+.form-actions{display:flex;gap:.5rem;margin-top:1.5rem}
+.btn-generate{
+  flex:1;padding:.7rem;
+  font-size:.83rem;font-weight:700;font-family:var(--font-sans);
+  color:#fff;background:linear-gradient(135deg,var(--accent),#7c3aed);border:none;
+  border-radius:var(--radius);cursor:pointer;
+  transition:all .2s;letter-spacing:.01em;
+}
+.btn-generate:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 4px 20px rgba(99,102,241,.25)}
+.btn-generate:active{transform:translateY(0)}
+.btn-reset{
+  padding:.7rem .9rem;font-size:.83rem;font-weight:600;font-family:var(--font-sans);
+  color:var(--text-secondary);background:var(--bg-tertiary);
+  border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .2s;
+}
+.btn-reset:hover{border-color:var(--danger);color:var(--danger)}
+
+/* ── OUTPUT PANEL ── */
+.output-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.85rem;flex-wrap:wrap}
+.output-title{font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.output-actions{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+
+.toggle-wrap{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--text-secondary);font-weight:500;cursor:pointer}
+.toggle{position:relative;width:34px;height:18px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:9px;transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--accent)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle input:checked~.toggle-knob{transform:translateX(16px)}
+
+.btn-sm{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .7rem;font-size:.72rem;font-weight:600;color:var(--text-secondary);background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:var(--font-sans);transition:all .2s;white-space:nowrap}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm.copied{border-color:var(--success);color:var(--success);background:var(--success-dim)}
+.btn-sm svg{width:13px;height:13px}
+
+.output-code{
+  flex:1;background:var(--bg-primary);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.15rem;
+  overflow:auto;font-family:var(--font-mono);font-size:.78rem;
+  line-height:1.75;white-space:pre;tab-size:2;
+  color:var(--text-secondary);min-height:250px;
+}
+.output-placeholder{color:var(--text-muted);font-family:var(--font-sans);font-style:italic;font-size:.82rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.5rem;min-height:200px}
+.output-placeholder svg{opacity:.3}
+
+/* ── SYNTAX HIGHLIGHTING ── */
+.json-key{color:var(--json-key)}
+.json-string{color:var(--json-string)}
+.json-number{color:var(--json-number)}
+.json-bool{color:var(--json-bool)}
+.json-null{color:var(--json-null)}
+.json-bracket{color:var(--json-bracket)}
+
+/* ── SCHEMA STATS ── */
+.output-stats{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+.stat{font-size:.68rem;font-weight:600;padding:.25rem .55rem;border-radius:20px;display:inline-flex;align-items:center;gap:.3rem}
+.stat-type{background:var(--accent-dim);color:var(--accent)}
+.stat-props{background:var(--bg-tertiary);color:var(--text-secondary);border:1px solid var(--border)}
+.stat-valid{background:var(--success-dim);color:var(--success)}
+
+/* ── FOOTER ── */
+.footer{padding:1rem 2rem;border-top:1px solid var(--border);text-align:center;font-size:.72rem;color:var(--text-muted);background:var(--bg-secondary)}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .main{grid-template-columns:1fr;min-height:auto}
+  .panel{max-height:none;overflow:visible}
+  .panel-form{border-right:none;border-bottom:1px solid var(--border)}
+  .panel-output{min-height:400px}
+  .header{padding:.85rem 1.15rem}
+  .tabs{padding:0 1rem;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .panel{padding:1.15rem}
+  .form-row,.form-row-3,.form-row-4{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .tab{padding:.65rem .7rem;font-size:.7rem}
+  .header h1{font-size:1rem}
+  .output-toolbar{flex-direction:column;align-items:flex-start}
+  .output-actions{width:100%;justify-content:space-between;flex-wrap:wrap}
+  .header-badges{display:none}
+  .header-right{display:none}
+}
+
+.schema-form{display:none}
+.schema-form.active{display:block}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* ── Subsection ── */
+.form-subsection{margin-top:.6rem;margin-bottom:.6rem;padding:.6rem .75rem;background:var(--bg-tertiary);border-radius:var(--radius);border:1px solid var(--border-subtle)}
+.form-subsection-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.5rem}
+
+/* ── Saved indicator ── */
+.saved-indicator{font-size:.7rem;font-weight:600;color:var(--success);opacity:0;transition:opacity .3s;margin-left:.25rem}
+.saved-indicator.show{opacity:1}
+
+/* ── Combine dropdown ── */
+.combine-wrap{position:relative;display:inline-flex}
+.combine-dropdown{position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:.35rem 0;min-width:170px;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.combine-dropdown.open{display:block}
+.combine-dropdown button{display:block;width:100%;text-align:left;padding:.4rem .75rem;font-size:.73rem;font-weight:500;color:var(--text-secondary);background:none;border:none;cursor:pointer;font-family:var(--font-sans)}
+.combine-dropdown button:hover{background:var(--accent-dim);color:var(--accent)}
+.stat-combined{background:var(--warning-dim);color:var(--warning)}
+
+/* ── Hidden by default output buttons ── */
+.btn-sm.hidden{display:none}
+
+/* ── Validator ── */
+.validator-area{width:100%;min-height:200px;resize:vertical;padding:.75rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-family:var(--font-mono);font-size:.8rem;line-height:1.6;outline:none;transition:border-color .2s}
+.validator-area:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px var(--accent-dim)}
+.validator-area.dragover{border-color:var(--accent);background:var(--accent-dim)}
+.validator-results{margin-top:1rem}
+.validator-item{display:flex;align-items:flex-start;gap:.5rem;padding:.45rem .65rem;border-radius:6px;margin-bottom:.35rem;font-size:.78rem;line-height:1.5}
+.validator-item.pass{background:var(--success-dim);color:var(--success)}
+.validator-item.fail{background:var(--danger-dim);color:var(--danger)}
+.validator-item.warn{background:var(--warning-dim);color:var(--warning)}
+.validator-icon{flex-shrink:0;font-weight:700;width:16px;text-align:center}
+.validator-score{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .75rem;border-radius:20px;font-size:.78rem;font-weight:700;margin-top:.75rem}
+.validator-score.green{background:var(--success-dim);color:var(--success)}
+.validator-score.yellow{background:var(--warning-dim);color:var(--warning)}
+.validator-score.red{background:var(--danger-dim);color:var(--danger)}
+.validator-drop-hint{text-align:center;padding:1.5rem;border:2px dashed var(--border);border-radius:var(--radius);color:var(--text-muted);font-size:.78rem;margin-bottom:.75rem;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-logo">S</div>
+    <h1>Schema<span>Gen</span></h1>
+    <div class="header-badges">
+      <span class="badge badge-schemas">7 Schemas</span>
+      <span class="badge badge-google">Google Ready</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <a class="header-btn" href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="m9 14 2 2 4-4"/></svg>
+      Rich Results Test
+    </a>
+    <a class="header-btn" href="https://toprank.ma" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      TopRank
+    </a>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-wrapper">
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-schema="localbusiness">LocalBusiness</button>
+    <button class="tab" data-schema="organization">Organization</button>
+    <button class="tab" data-schema="service">Service</button>
+    <button class="tab" data-schema="faq">FAQPage <span class="tab-dot green" title="Google Rich Result"></span></button>
+    <button class="tab" data-schema="breadcrumb">BreadcrumbList</button>
+    <button class="tab" data-schema="product">Product <span class="tab-dot green" title="Google Rich Result"></span></button>
+    <button class="tab" data-schema="article">Article</button>
+    <button class="tab" data-schema="validator">&#x2713; Validator</button>
+  </nav>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- FORM PANEL -->
+  <div class="panel panel-form" id="formPanel">
+
+    <!-- ═══════════════════ LOCAL BUSINESS ═══════════════════ -->
+    <form class="schema-form active" id="form-localbusiness" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Tip:</strong> LocalBusiness schema helps your business appear in local search results, Google Maps, and the Knowledge Panel. Fill address + geo for best results.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Business Information</div>
+        <div class="form-group">
+          <label class="form-label">Business Name <span class="req">*</span></label>
+          <input type="text" class="form-input" data-field="name" required placeholder="e.g. TopRank Digital Agency">
+          <div class="form-error">Business name is required</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Business Type <span class="req">*</span></label>
+            <select class="form-select" data-field="type" required>
+              <option value="">Select type…</option>
+              <option value="LocalBusiness">LocalBusiness (General)</option>
+              <option value="Restaurant">Restaurant</option>
+              <option value="Dentist">Dentist</option>
+              <option value="Attorney">Attorney</option>
+              <option value="AccountingService">Accounting Service</option>
+              <option value="AutoRepair">Auto Repair</option>
+              <option value="Bakery">Bakery</option>
+              <option value="BarOrPub">Bar / Pub</option>
+              <option value="BeautySalon">Beauty Salon</option>
+              <option value="CafeOrCoffeeShop">Cafe / Coffee Shop</option>
+              <option value="Electrician">Electrician</option>
+              <option value="FinancialService">Financial Service</option>
+              <option value="FurnitureStore">Furniture Store</option>
+              <option value="GasStation">Gas Station</option>
+              <option value="GolfCourse">Golf Course</option>
+              <option value="HairSalon">Hair Salon</option>
+              <option value="HealthClub">Health Club</option>
+              <option value="Hotel">Hotel</option>
+              <option value="InsuranceAgency">Insurance Agency</option>
+              <option value="MedicalClinic">Medical Clinic</option>
+              <option value="Plumber">Plumber</option>
+              <option value="RealEstateAgent">Real Estate Agent</option>
+              <option value="Store">Store</option>
+              <option value="TravelAgency">Travel Agency</option>
+              <option value="VeterinaryCare">Veterinary Care</option>
+            </select>
+            <div class="form-error">Business type is required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price Range</label>
+            <select class="form-select" data-field="priceRange">
+              <option value="">Select…</option>
+              <option value="$">$ — Budget</option>
+              <option value="$$">$$ — Moderate</option>
+              <option value="$$$">$$$ — Expensive</option>
+              <option value="$$$$">$$$$ — Luxury</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description <span class="label-tag recommended">Recommended</span></label>
+          <textarea class="form-textarea" data-field="description" rows="3" placeholder="Brief description of your business…"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Website URL <span class="label-tag recommended">Recommended</span></label>
+            <input type="url" class="form-input" data-field="url" placeholder="https://example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image URL <span class="label-tag recommended">Recommended</span></label>
+            <input type="url" class="form-input" data-field="image" placeholder="https://example.com/photo.jpg">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Contact</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Telephone</label>
+            <input type="tel" class="form-input" data-field="telephone" placeholder="+1-555-123-4567">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" data-field="email" placeholder="info@example.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Address</div>
+        <div class="form-group">
+          <label class="form-label">Street Address</label>
+          <input type="text" class="form-input" data-field="streetAddress" placeholder="123 Main Street">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" class="form-input" data-field="city" placeholder="New York">
+          </div>
+          <div class="form-group">
+            <label class="form-label">State / Region</label>
+            <input type="text" class="form-input" data-field="region" placeholder="NY">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Postal Code</label>
+            <input type="text" class="form-input" data-field="postalCode" placeholder="10001">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input type="text" class="form-input" data-field="country" placeholder="US">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Location & Hours</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Latitude <span class="label-tag recommended">Recommended</span></label>
+            <input type="number" step="any" class="form-input" data-field="latitude" placeholder="40.7128">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Longitude <span class="label-tag recommended">Recommended</span></label>
+            <input type="number" step="any" class="form-input" data-field="longitude" placeholder="-74.0060">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Opening Hours</label>
+          <input type="text" class="form-input" data-field="openingHours" placeholder="Mo-Fr 09:00-17:00, Sa 10:00-14:00">
+          <div class="form-hint">Format: Mo-Fr 09:00-17:00 (comma-separated for multiple)</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Social Profiles</div>
+        <div class="form-group">
+          <label class="form-label">Same-As URLs</label>
+          <textarea class="form-textarea" data-field="sameAs" rows="3" placeholder="https://facebook.com/yourbusiness&#10;https://instagram.com/yourbusiness&#10;https://twitter.com/yourbusiness"></textarea>
+          <div class="form-hint">One URL per line — social profiles, directories, etc.</div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('localbusiness')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('localbusiness')">Reset</button><span class="saved-indicator" data-saved="localbusiness">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ ORGANIZATION ═══════════════════ -->
+    <form class="schema-form" id="form-organization" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Tip:</strong> Organization schema powers the Knowledge Panel. Include logo, sameAs (social profiles), and contactPoint for best visibility.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Organization Details</div>
+        <div class="form-group">
+          <label class="form-label">Organization Name <span class="req">*</span></label>
+          <input type="text" class="form-input" data-field="name" required placeholder="e.g. Acme Corporation">
+          <div class="form-error">Organization name is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organization Type <span class="req">*</span></label>
+          <select class="form-select" data-field="type" required>
+            <option value="">Select type…</option>
+            <option value="Organization">Organization (General)</option>
+            <option value="Corporation">Corporation</option>
+            <option value="EducationalOrganization">Educational Organization</option>
+            <option value="GovernmentOrganization">Government Organization</option>
+            <option value="MedicalOrganization">Medical Organization</option>
+            <option value="NGO">NGO</option>
+            <option value="NewsMediaOrganization">News Media Organization</option>
+            <option value="SportsOrganization">Sports Organization</option>
+          </select>
+          <div class="form-error">Organization type is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" data-field="description" rows="3" placeholder="About the organization…"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Website URL <span class="label-tag recommended">Recommended</span></label>
+            <input type="url" class="form-input" data-field="url" placeholder="https://example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Logo URL <span class="label-tag recommended">Recommended</span></label>
+            <input type="url" class="form-input" data-field="logo" placeholder="https://example.com/logo.png">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Founding Date</label>
+          <input type="date" class="form-input" data-field="foundingDate">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Contact</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Telephone</label>
+            <input type="tel" class="form-input" data-field="telephone" placeholder="+1-555-123-4567">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" data-field="email" placeholder="info@example.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Contact Point</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Contact Type</label>
+            <select class="form-select" data-field="contactType">
+              <option value="">Select…</option>
+              <option value="customer service">Customer Service</option>
+              <option value="technical support">Technical Support</option>
+              <option value="billing support">Billing Support</option>
+              <option value="sales">Sales</option>
+              <option value="reservations">Reservations</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Phone</label>
+            <input type="tel" class="form-input" data-field="contactPhone" placeholder="+1-800-123-4567">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Email</label>
+            <input type="email" class="form-input" data-field="contactEmail" placeholder="support@example.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Available Languages</label>
+          <input type="text" class="form-input" data-field="availableLanguage" placeholder="English, Spanish, French">
+          <div class="form-hint">Comma-separated language names</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Social Profiles</div>
+        <div class="form-group">
+          <label class="form-label">Social / Same-As URLs <span class="label-tag recommended">Recommended</span></label>
+          <textarea class="form-textarea" data-field="sameAs" rows="4" placeholder="https://facebook.com/example&#10;https://twitter.com/example&#10;https://linkedin.com/company/example&#10;https://instagram.com/example"></textarea>
+          <div class="form-hint">One URL per line — feeds into Google Knowledge Panel</div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('organization')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('organization')">Reset</button><span class="saved-indicator" data-saved="organization">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ SERVICE ═══════════════════ -->
+    <form class="schema-form" id="form-service" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Tip:</strong> Service schema helps Google understand what services you offer. Combine with LocalBusiness or Organization for full coverage.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Service Information</div>
+        <div class="form-group">
+          <label class="form-label">Service Name <span class="req">*</span></label>
+          <input type="text" class="form-input" data-field="name" required placeholder="e.g. SEO Audit Service">
+          <div class="form-error">Service name is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description <span class="req">*</span></label>
+          <textarea class="form-textarea" data-field="description" required rows="3" placeholder="Detailed description of the service…"></textarea>
+          <div class="form-error">Description is required</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Service Type</label>
+            <input type="text" class="form-input" data-field="serviceType" placeholder="e.g. Digital Marketing">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" class="form-input" data-field="category" placeholder="e.g. Marketing">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Service URL</label>
+            <input type="url" class="form-input" data-field="url" placeholder="https://example.com/services/seo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image URL</label>
+            <input type="url" class="form-input" data-field="image" placeholder="https://example.com/service.jpg">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Area Served</label>
+          <input type="text" class="form-input" data-field="areaServed" placeholder="e.g. United States, Morocco">
+          <div class="form-hint">Comma-separated for multiple areas</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Provider</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Provider Name</label>
+            <input type="text" class="form-input" data-field="providerName" placeholder="e.g. TopRank">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Provider URL</label>
+            <input type="url" class="form-input" data-field="providerUrl" placeholder="https://toprank.ma">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Pricing</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Price</label>
+            <input type="text" class="form-input" data-field="price" placeholder="99.00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Currency</label>
+            <input type="text" class="form-input" data-field="currency" placeholder="USD" maxlength="3">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price Valid Until</label>
+            <input type="date" class="form-input" data-field="priceValidUntil">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Reviews</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Rating Value</label>
+            <input type="number" step="0.1" class="form-input" data-field="ratingValue" placeholder="4.8" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Review Count</label>
+            <input type="number" class="form-input" data-field="reviewCount" placeholder="52" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Best Rating</label>
+            <input type="number" class="form-input" data-field="bestRating" placeholder="5" min="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('service')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('service')">Reset</button><span class="saved-indicator" data-saved="service">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ FAQ ═══════════════════ -->
+    <form class="schema-form" id="form-faq" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Rich Result:</strong> FAQPage schema enables FAQ rich results in Google Search. Each answer supports <strong>HTML formatting</strong> (links, bold, lists). Answers must be <strong>complete</strong> — no "click to read more". <strong>Max ~10 items</strong> recommended per page.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Page Information</div>
+        <div class="form-group">
+          <label class="form-label">Page Name <span class="label-tag recommended">Recommended</span></label>
+          <input type="text" class="form-input" data-field="pageName" placeholder="e.g. Frequently Asked Questions — SEO Services">
+          <div class="form-hint">The title of the FAQ page (name property of FAQPage)</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Page Description</label>
+            <textarea class="form-textarea" data-field="pageDescription" rows="2" placeholder="A brief description of this FAQ page…"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Page URL</label>
+            <input type="url" class="form-input" data-field="pageUrl" placeholder="https://example.com/faq">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Reviewed Date</label>
+            <input type="date" class="form-input" data-field="lastReviewed">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Questions & Answers</div>
+        <div class="dynamic-list" id="faq-list">
+          <div class="dynamic-row" data-index="0">
+            <span class="row-num">01</span>
+            <div class="dynamic-fields">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Question <span class="req">*</span></label>
+                <input type="text" class="form-input" data-field="question" required placeholder="e.g. What is structured data?">
+                <div class="form-error">Question is required</div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Answer <span class="req">*</span> <span class="label-tag google">Supports HTML</span></label>
+                <textarea class="form-textarea" data-field="answer" required rows="3" placeholder="Full answer — can include HTML: &lt;a href=&quot;...&quot;&gt;links&lt;/a&gt;, &lt;b&gt;bold&lt;/b&gt;, &lt;ul&gt;&lt;li&gt;lists&lt;/li&gt;&lt;/ul&gt;"></textarea>
+                <div class="form-error">Answer is required</div>
+                <div class="form-hint">Must contain the complete answer. Google supports &lt;a&gt;, &lt;b&gt;, &lt;i&gt;, &lt;br&gt;, &lt;ul&gt;/&lt;ol&gt;, &lt;li&gt;, &lt;p&gt;, &lt;h2&gt;-&lt;h6&gt; tags in answers.</div>
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Answer URL</label>
+                  <input type="url" class="form-input" data-field="answerUrl" placeholder="https://example.com/faq#answer-1">
+                  <div class="form-hint">Deep link to this specific answer</div>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Date Created</label>
+                  <input type="date" class="form-input" data-field="dateCreated">
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addFaqRow()">+ Add Question</button>
+        <div class="form-hint" style="margin-top:.5rem">Google recommends a maximum of ~10 FAQ items per page for rich results eligibility.</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('faq')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('faq')">Reset</button><span class="saved-indicator" data-saved="faq">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ BREADCRUMB ═══════════════════ -->
+    <form class="schema-form" id="form-breadcrumb" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Tip:</strong> BreadcrumbList replaces the URL in search results with a readable breadcrumb trail. The last item should be the current page.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Breadcrumb Items</div>
+        <div class="dynamic-list" id="breadcrumb-list">
+          <div class="dynamic-row" data-index="0">
+            <span class="row-num">01</span>
+            <div class="dynamic-fields">
+              <div class="form-row">
+                <div class="form-group" style="margin:0">
+                  <input type="text" class="form-input" data-field="name" required placeholder="Page Name *">
+                  <div class="form-error">Name is required</div>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <input type="url" class="form-input" data-field="url" required placeholder="URL *">
+                  <div class="form-error">URL is required</div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addBreadcrumbRow()">+ Add Breadcrumb</button>
+        <div class="form-hint" style="margin-top:.5rem">Position is auto-assigned. First item = Home, last = current page.</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('breadcrumb')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('breadcrumb')">Reset</button><span class="saved-indicator" data-saved="breadcrumb">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ PRODUCT ═══════════════════ -->
+    <form class="schema-form" id="form-product" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Rich Result:</strong> Product schema enables product snippets, merchant listings, and star ratings. Google <strong>requires</strong>: name + (review OR aggregateRating OR offers). Adding <strong>Pros & Cons</strong> (positiveNotes/negativeNotes) enables the pros/cons rich result.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Product Details</div>
+        <div class="form-group">
+          <label class="form-label">Product Name <span class="req">*</span></label>
+          <input type="text" class="form-input" data-field="name" required placeholder="e.g. Sony WH-1000XM5 Wireless Headphones">
+          <div class="form-error">Product name is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description <span class="req">*</span></label>
+          <textarea class="form-textarea" data-field="description" required rows="3" placeholder="Detailed product description…"></textarea>
+          <div class="form-error">Description is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Images <span class="label-tag recommended">Recommended</span></label>
+          <textarea class="form-textarea" data-field="images" rows="2" placeholder="https://example.com/product-front.jpg&#10;https://example.com/product-side.jpg"></textarea>
+          <div class="form-hint">One URL per line — multiple images recommended for product listings</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Product URL</label>
+          <input type="url" class="form-input" data-field="url" placeholder="https://example.com/product">
+        </div>
+        <div class="form-row-4">
+          <div class="form-group">
+            <label class="form-label">Brand <span class="label-tag recommended">Recommended</span></label>
+            <input type="text" class="form-input" data-field="brand" placeholder="Sony">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SKU</label>
+            <input type="text" class="form-input" data-field="sku" placeholder="WH-1000XM5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">GTIN</label>
+            <input type="text" class="form-input" data-field="gtin" placeholder="0123456789012">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MPN</label>
+            <input type="text" class="form-input" data-field="mpn" placeholder="WH1000XM5/B">
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <input type="text" class="form-input" data-field="color" placeholder="e.g. Black">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Material</label>
+            <input type="text" class="form-input" data-field="material" placeholder="e.g. Plastic, Leather">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weight</label>
+            <input type="text" class="form-input" data-field="weight" placeholder="e.g. 250g">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Pricing & Availability</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Price <span class="req">*</span></label>
+            <input type="text" class="form-input" data-field="price" required placeholder="349.99">
+            <div class="form-error">Price is required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Currency <span class="req">*</span></label>
+            <input type="text" class="form-input" data-field="currency" required placeholder="USD" maxlength="3">
+            <div class="form-error">Currency is required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price Valid Until <span class="label-tag recommended">Recommended</span></label>
+            <input type="date" class="form-input" data-field="priceValidUntil">
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Availability <span class="label-tag recommended">Recommended</span></label>
+            <select class="form-select" data-field="availability">
+              <option value="">Select…</option>
+              <option value="https://schema.org/InStock">In Stock</option>
+              <option value="https://schema.org/OutOfStock">Out of Stock</option>
+              <option value="https://schema.org/PreOrder">Pre-Order</option>
+              <option value="https://schema.org/BackOrder">Back Order</option>
+              <option value="https://schema.org/Discontinued">Discontinued</option>
+              <option value="https://schema.org/LimitedAvailability">Limited Availability</option>
+              <option value="https://schema.org/SoldOut">Sold Out</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Condition</label>
+            <select class="form-select" data-field="condition">
+              <option value="">Select…</option>
+              <option value="https://schema.org/NewCondition">New</option>
+              <option value="https://schema.org/UsedCondition">Used</option>
+              <option value="https://schema.org/RefurbishedCondition">Refurbished</option>
+              <option value="https://schema.org/DamagedCondition">Damaged</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Offer URL</label>
+            <input type="url" class="form-input" data-field="offerUrl" placeholder="https://example.com/buy">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Seller</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Seller Name</label>
+            <input type="text" class="form-input" data-field="sellerName" placeholder="e.g. Best Electronics Store">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Seller URL</label>
+            <input type="url" class="form-input" data-field="sellerUrl" placeholder="https://store.example.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Shipping Details</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Shipping Cost</label>
+            <input type="text" class="form-input" data-field="shippingCost" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Shipping Currency</label>
+            <input type="text" class="form-input" data-field="shippingCurrency" placeholder="USD" maxlength="3">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Shipping Destination</label>
+            <input type="text" class="form-input" data-field="shippingCountry" placeholder="US">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Min Delivery Days</label>
+            <input type="number" class="form-input" data-field="minDeliveryDays" placeholder="3" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Delivery Days</label>
+            <input type="number" class="form-input" data-field="maxDeliveryDays" placeholder="7" min="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Return Policy</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Return Days</label>
+            <input type="number" class="form-input" data-field="returnDays" placeholder="30" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Return Policy Type</label>
+            <select class="form-select" data-field="returnPolicyType">
+              <option value="">Select…</option>
+              <option value="https://schema.org/MerchantReturnFiniteReturnWindow">Finite Return Window</option>
+              <option value="https://schema.org/MerchantReturnUnlimitedWindow">Unlimited Return Window</option>
+              <option value="https://schema.org/MerchantReturnNotPermitted">Not Permitted</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Return Fee</label>
+            <select class="form-select" data-field="returnFee">
+              <option value="">Select…</option>
+              <option value="https://schema.org/FreeReturn">Free Return</option>
+              <option value="https://schema.org/ReturnShippingFees">Buyer Pays Shipping</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Aggregate Rating</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Rating Value</label>
+            <input type="number" step="0.1" class="form-input" data-field="ratingValue" placeholder="4.5" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Review Count</label>
+            <input type="number" class="form-input" data-field="reviewCount" placeholder="1250" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Best Rating</label>
+            <input type="number" class="form-input" data-field="bestRating" placeholder="5" min="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Pros & Cons <span class="label-tag google" style="margin-left:.5rem">Google Rich Result</span></div>
+        <div class="form-hint" style="margin-bottom:.6rem">Enables the Pros & Cons rich result in Google Search. Based on Google's <code>positiveNotes</code> / <code>negativeNotes</code> structured data.</div>
+
+        <div class="form-subsection">
+          <div class="form-subsection-title" style="color:var(--success)">&#x2795; Pros (Positive Notes)</div>
+          <div class="dynamic-list" id="pros-list">
+            <div class="dynamic-row" data-index="0">
+              <span class="row-num" style="color:var(--success)">01</span>
+              <div class="dynamic-fields">
+                <input type="text" class="form-input" data-field="pro" placeholder="e.g. Industry-leading noise cancellation">
+              </div>
+              <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" onclick="addProRow()">+ Add Pro</button>
+        </div>
+
+        <div class="form-subsection" style="margin-top:.6rem">
+          <div class="form-subsection-title" style="color:var(--danger)">&#x2796; Cons (Negative Notes)</div>
+          <div class="dynamic-list" id="cons-list">
+            <div class="dynamic-row" data-index="0">
+              <span class="row-num" style="color:var(--danger)">01</span>
+              <div class="dynamic-fields">
+                <input type="text" class="form-input" data-field="con" placeholder="e.g. No IP water resistance rating">
+              </div>
+              <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" onclick="addConRow()">+ Add Con</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Individual Reviews</div>
+        <div class="form-hint" style="margin-bottom:.6rem">Add individual reviews for the review snippet rich result.</div>
+        <div class="dynamic-list" id="reviews-list">
+          <div class="dynamic-row" data-index="0">
+            <span class="row-num">01</span>
+            <div class="dynamic-fields">
+              <div class="form-row">
+                <div class="form-group" style="margin:0">
+                  <input type="text" class="form-input" data-field="reviewAuthor" placeholder="Reviewer Name">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <input type="number" step="0.1" min="1" max="5" class="form-input" data-field="reviewRating" placeholder="Rating (1-5)">
+                </div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <textarea class="form-textarea" data-field="reviewBody" rows="2" placeholder="Review text…"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="margin:0">
+                  <input type="date" class="form-input" data-field="reviewDate" placeholder="Date">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <input type="text" class="form-input" data-field="reviewPublisher" placeholder="Publisher (e.g. TechRadar)">
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addReviewRow()">+ Add Review</button>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('product')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('product')">Reset</button><span class="saved-indicator" data-saved="product">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ ARTICLE ═══════════════════ -->
+    <form class="schema-form" id="form-article" novalidate>
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Google Tip:</strong> Article schema helps Google understand the headline, author, publish date, and images. Required for Top Stories, AMP results, and AI-generated summaries.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Article Details</div>
+        <div class="form-group">
+          <label class="form-label">Article Type <span class="req">*</span></label>
+          <select class="form-select" data-field="type" required>
+            <option value="">Select type…</option>
+            <option value="Article">Article</option>
+            <option value="NewsArticle">News Article</option>
+            <option value="BlogPosting">Blog Posting</option>
+            <option value="TechArticle">Tech Article</option>
+          </select>
+          <div class="form-error">Article type is required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Headline <span class="req">*</span> <span class="label-tag google">Max 110 chars</span></label>
+          <input type="text" class="form-input" data-field="headline" required placeholder="e.g. How to Improve Core Web Vitals in 2026" maxlength="110">
+          <div class="form-error">Headline is required</div>
+          <div class="form-hint">Google recommends keeping headlines under 110 characters.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description <span class="label-tag recommended">Recommended</span></label>
+          <textarea class="form-textarea" data-field="description" rows="3" placeholder="Article summary / meta description…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image URL <span class="label-tag recommended">Recommended</span></label>
+          <input type="url" class="form-input" data-field="image" placeholder="https://example.com/hero.jpg">
+          <div class="form-hint">Google recommends images at least 1200px wide. Supported: .jpg, .png, .gif, .svg, .webp</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Article URL</label>
+            <input type="url" class="form-input" data-field="url" placeholder="https://example.com/blog/post">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Language</label>
+            <input type="text" class="form-input" data-field="inLanguage" placeholder="en-US">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Keywords</label>
+          <input type="text" class="form-input" data-field="keywords" placeholder="SEO, structured data, JSON-LD">
+          <div class="form-hint">Comma-separated keywords</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Word Count</label>
+            <input type="number" class="form-input" data-field="wordCount" placeholder="1500" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Article Section</label>
+            <input type="text" class="form-input" data-field="articleSection" placeholder="e.g. Technology">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Author</div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Author Name <span class="req">*</span></label>
+            <input type="text" class="form-input" data-field="authorName" required placeholder="Jane Smith">
+            <div class="form-error">Author name is required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Author URL <span class="label-tag recommended">Recommended</span></label>
+            <input type="url" class="form-input" data-field="authorUrl" placeholder="https://example.com/author/jane">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Author Type</label>
+            <select class="form-select" data-field="authorType">
+              <option value="Person">Person</option>
+              <option value="Organization">Organization</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Author Job Title</label>
+          <input type="text" class="form-input" data-field="authorJobTitle" placeholder="e.g. Senior SEO Consultant">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Publisher</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Publisher Name <span class="req">*</span></label>
+            <input type="text" class="form-input" data-field="publisherName" required placeholder="TopRank Blog">
+            <div class="form-error">Publisher name is required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Publisher Logo URL <span class="label-tag recommended">Recommended</span></label>
+            <input type="url" class="form-input" data-field="publisherLogo" placeholder="https://example.com/logo.png">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Publisher URL</label>
+          <input type="url" class="form-input" data-field="publisherUrl" placeholder="https://example.com">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Dates</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date Published <span class="label-tag recommended">Recommended</span></label>
+            <input type="date" class="form-input" data-field="datePublished">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date Modified <span class="label-tag recommended">Recommended</span></label>
+            <input type="date" class="form-input" data-field="dateModified">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="generate('article')">Generate JSON-LD</button>
+        <button type="button" class="btn-reset" onclick="resetForm('article')">Reset</button><span class="saved-indicator" data-saved="article">Saved</span>
+      </div>
+    </form>
+
+    <!-- ═══════════════════ VALIDATOR ═══════════════════ -->
+    <div class="schema-form" id="form-validator">
+      <div class="google-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><strong>Schema Validator:</strong> Paste any JSON-LD below or drag & drop a <code>.json</code> / <code>.jsonld</code> file. Checks syntax, required properties, and recommended fields per Google's guidelines.</span>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">JSON-LD Input</div>
+        <div class="validator-drop-hint" id="validatorDropZone">Drop a .json or .jsonld file here, or click to paste below</div>
+        <textarea class="validator-area" id="validatorInput" placeholder='Paste your JSON-LD here, e.g.:
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "My Business"
+}'></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-generate" onclick="runValidator()">Validate Schema</button>
+        <button type="button" class="btn-reset" onclick="clearValidator()">Clear</button>
+      </div>
+
+      <div class="validator-results" id="validatorResults"></div>
+    </div>
+
+  </div>
+
+  <!-- OUTPUT PANEL -->
+  <div class="panel panel-output">
+    <div class="output-toolbar">
+      <span class="output-title">Output</span>
+      <div class="output-actions">
+        <label class="toggle-wrap">
+          <label class="toggle">
+            <input type="checkbox" id="wrapToggle">
+            <span class="toggle-track"></span>
+            <span class="toggle-knob"></span>
+          </label>
+          &lt;script&gt; tag
+        </label>
+        <button class="btn-sm" id="btnCopy" onclick="copyOutput()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyText">Copy</span>
+        </button>
+        <button class="btn-sm" onclick="downloadJson()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+        <div class="combine-wrap">
+          <button class="btn-sm hidden" id="btnCombine" onclick="toggleCombineDropdown()">&#xFF0B; Combine</button>
+          <div class="combine-dropdown" id="combineDropdown">
+            <button onclick="combineWith('localbusiness')">LocalBusiness</button>
+            <button onclick="combineWith('organization')">Organization</button>
+            <button onclick="combineWith('service')">Service</button>
+            <button onclick="combineWith('faq')">FAQPage</button>
+            <button onclick="combineWith('breadcrumb')">BreadcrumbList</button>
+            <button onclick="combineWith('product')">Product</button>
+            <button onclick="combineWith('article')">Article</button>
+          </div>
+        </div>
+        <a class="btn-sm hidden" id="btnTestGoogle" href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Test in Google &#x2197;</a>
+      </div>
+    </div>
+    <div class="output-code" id="output">
+      <div class="output-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/></svg>
+        Fill in the form and click Generate to see your JSON-LD structured data here.
+      </div>
+    </div>
+    <div class="output-stats" id="outputStats"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  Built by <strong>Soulaimane Echemmali</strong> · <a href="https://toprank.ma" target="_blank" rel="noopener">TopRank</a>
+</footer>
+
+<script>
+// ── State ──
+let currentSchema = 'localbusiness';
+let rawJson = '';
+let lastSchemaType = '';
+let lastSchemaData = null;
+let isCombined = false;
+const SCHEMA_NAMES = ['localbusiness','organization','service','faq','breadcrumb','product','article'];
+
+// ── Tab switching ──
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentSchema = tab.dataset.schema;
+  document.querySelectorAll('.schema-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('form-' + currentSchema).classList.add('active');
+  clearOutput();
+});
+
+// ── Helpers ──
+function val(form, field) {
+  const el = form.querySelector(`[data-field="${field}"]`);
+  return el ? el.value.trim() : '';
+}
+
+function clean(obj) {
+  if (Array.isArray(obj)) {
+    const arr = obj.map(clean).filter(v => v !== undefined);
+    return arr.length ? arr : undefined;
+  }
+  if (obj && typeof obj === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const cleaned = clean(v);
+      if (cleaned !== undefined) out[k] = cleaned;
+    }
+    return Object.keys(out).length ? out : undefined;
+  }
+  if (obj === null || obj === undefined || obj === '') return undefined;
+  return obj;
+}
+
+function clearOutput() {
+  const output = document.getElementById('output');
+  output.innerHTML = `<div class="output-placeholder">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/></svg>
+    Fill in the form and click Generate to see your JSON-LD structured data here.
+  </div>`;
+  rawJson = '';
+  lastSchemaData = null;
+  isCombined = false;
+  document.getElementById('outputStats').innerHTML = '';
+  document.getElementById('btnCombine').classList.add('hidden');
+  document.getElementById('btnTestGoogle').classList.add('hidden');
+  closeCombineDropdown();
+}
+
+function resetForm(schema) {
+  const form = document.getElementById('form-' + schema);
+  form.reset();
+  form.querySelectorAll('.form-error').forEach(e => e.classList.remove('visible'));
+  form.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
+  ['faq-list','breadcrumb-list','pros-list','cons-list','reviews-list'].forEach(id => {
+    const list = document.getElementById(id);
+    if (list && form.contains(list)) {
+      while (list.children.length > 1) list.lastChild.remove();
+      renumberRows(list);
+    }
+  });
+  // Clear localStorage for this schema
+  try { localStorage.removeItem('schema-gen-' + schema); } catch(e) {}
+  clearOutput();
+}
+
+function countProps(obj) {
+  if (!obj || typeof obj !== 'object') return 0;
+  let count = 0;
+  for (const v of Object.values(obj)) {
+    if (v !== undefined && v !== null && v !== '') {
+      if (typeof v === 'object' && !Array.isArray(v)) count += countProps(v);
+      else count++;
+    }
+  }
+  return count;
+}
+
+// ── Validation ──
+function validate(form) {
+  let valid = true;
+  form.querySelectorAll('.form-error').forEach(e => e.classList.remove('visible'));
+  form.querySelectorAll('.form-input.error, .form-select.error, .form-textarea.error').forEach(e => e.classList.remove('error'));
+
+  // Required fields
+  form.querySelectorAll('[required]').forEach(el => {
+    if (!el.value.trim()) {
+      valid = false;
+      el.classList.add('error');
+      const err = el.parentElement.querySelector('.form-error');
+      if (err) err.classList.add('visible');
+    }
+  });
+
+  // URL fields: must start with https://
+  form.querySelectorAll('input[type="url"].form-input').forEach(el => {
+    const v = el.value.trim();
+    if (v && !v.startsWith('https://')) {
+      valid = false;
+      el.classList.add('error');
+      let err = el.parentElement.querySelector('.form-error');
+      if (!err) {
+        err = document.createElement('div');
+        err.className = 'form-error';
+        el.parentElement.appendChild(err);
+      }
+      err.textContent = 'Must start with https://';
+      err.classList.add('visible');
+    }
+  });
+
+  // URL-like data-fields (url, Url, URL in field name) that are not type="url"
+  form.querySelectorAll('.form-input[data-field]').forEach(el => {
+    if (el.type === 'url') return; // already handled above
+    const field = el.dataset.field || '';
+    if (/url/i.test(field)) {
+      const v = el.value.trim();
+      if (v && !v.startsWith('https://')) {
+        valid = false;
+        el.classList.add('error');
+        let err = el.parentElement.querySelector('.form-error');
+        if (!err) {
+          err = document.createElement('div');
+          err.className = 'form-error';
+          el.parentElement.appendChild(err);
+        }
+        err.textContent = 'Must start with https://';
+        err.classList.add('visible');
+      }
+    }
+  });
+
+  // Telephone fields: must start with +
+  form.querySelectorAll('input[type="tel"].form-input').forEach(el => {
+    const v = el.value.trim();
+    if (v && !/^\+\d/.test(v)) {
+      valid = false;
+      el.classList.add('error');
+      let err = el.parentElement.querySelector('.form-error');
+      if (!err) {
+        err = document.createElement('div');
+        err.className = 'form-error';
+        el.parentElement.appendChild(err);
+      }
+      err.textContent = 'Must start with + followed by digits';
+      err.classList.add('visible');
+    }
+  });
+
+  if (!valid) {
+    const firstErr = form.querySelector('.error');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  return valid;
+}
+
+document.addEventListener('input', (e) => {
+  if (e.target.classList.contains('error')) {
+    e.target.classList.remove('error');
+    const err = e.target.parentElement.querySelector('.form-error');
+    if (err) err.classList.remove('visible');
+  }
+  // Auto-save to localStorage
+  const form = e.target.closest('.schema-form');
+  if (form) {
+    const schemaId = form.id.replace('form-', '');
+    if (SCHEMA_NAMES.includes(schemaId)) {
+      saveFormToStorage(schemaId);
+    }
+  }
+});
+
+// Also save on select change (input event doesn't fire on <select>)
+document.addEventListener('change', (e) => {
+  if (e.target.matches('.form-select')) {
+    if (e.target.classList.contains('error')) {
+      e.target.classList.remove('error');
+      const err = e.target.parentElement.querySelector('.form-error');
+      if (err) err.classList.remove('visible');
+    }
+    const form = e.target.closest('.schema-form');
+    if (form) {
+      const schemaId = form.id.replace('form-', '');
+      if (SCHEMA_NAMES.includes(schemaId)) saveFormToStorage(schemaId);
+    }
+  }
+});
+
+// ── Dynamic rows ──
+function addFaqRow() {
+  const list = document.getElementById('faq-list');
+  const idx = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.dataset.index = idx;
+  row.innerHTML = `
+    <span class="row-num">${String(idx+1).padStart(2,'0')}</span>
+    <div class="dynamic-fields">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Question <span class="req">*</span></label>
+        <input type="text" class="form-input" data-field="question" required placeholder="e.g. What is structured data?">
+        <div class="form-error">Question is required</div>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Answer <span class="req">*</span> <span class="label-tag google">Supports HTML</span></label>
+        <textarea class="form-textarea" data-field="answer" required rows="3" placeholder="Full answer — can include HTML tags"></textarea>
+        <div class="form-error">Answer is required</div>
+        <div class="form-hint">Must contain the complete answer. Google supports &lt;a&gt;, &lt;b&gt;, &lt;i&gt;, &lt;br&gt;, &lt;ul&gt;/&lt;ol&gt;, &lt;li&gt;, &lt;p&gt;, &lt;h2&gt;-&lt;h6&gt; tags in answers.</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Answer URL</label>
+          <input type="url" class="form-input" data-field="answerUrl" placeholder="https://example.com/faq#answer-${idx+1}">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Date Created</label>
+          <input type="date" class="form-input" data-field="dateCreated">
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>`;
+  list.appendChild(row);
+}
+
+function addBreadcrumbRow() {
+  const list = document.getElementById('breadcrumb-list');
+  const idx = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.dataset.index = idx;
+  row.innerHTML = `
+    <span class="row-num">${String(idx+1).padStart(2,'0')}</span>
+    <div class="dynamic-fields">
+      <div class="form-row">
+        <div class="form-group" style="margin:0">
+          <input type="text" class="form-input" data-field="name" required placeholder="Page Name *">
+          <div class="form-error">Name is required</div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <input type="url" class="form-input" data-field="url" required placeholder="URL *">
+          <div class="form-error">URL is required</div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>`;
+  list.appendChild(row);
+}
+
+function addProRow() {
+  const list = document.getElementById('pros-list');
+  const idx = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.dataset.index = idx;
+  row.innerHTML = `
+    <span class="row-num" style="color:var(--success)">${String(idx+1).padStart(2,'0')}</span>
+    <div class="dynamic-fields">
+      <input type="text" class="form-input" data-field="pro" placeholder="e.g. Great battery life">
+    </div>
+    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>`;
+  list.appendChild(row);
+}
+
+function addConRow() {
+  const list = document.getElementById('cons-list');
+  const idx = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.dataset.index = idx;
+  row.innerHTML = `
+    <span class="row-num" style="color:var(--danger)">${String(idx+1).padStart(2,'0')}</span>
+    <div class="dynamic-fields">
+      <input type="text" class="form-input" data-field="con" placeholder="e.g. No 3.5mm audio jack">
+    </div>
+    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>`;
+  list.appendChild(row);
+}
+
+function addReviewRow() {
+  const list = document.getElementById('reviews-list');
+  const idx = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.dataset.index = idx;
+  row.innerHTML = `
+    <span class="row-num">${String(idx+1).padStart(2,'0')}</span>
+    <div class="dynamic-fields">
+      <div class="form-row">
+        <div class="form-group" style="margin:0">
+          <input type="text" class="form-input" data-field="reviewAuthor" placeholder="Reviewer Name">
+        </div>
+        <div class="form-group" style="margin:0">
+          <input type="number" step="0.1" min="1" max="5" class="form-input" data-field="reviewRating" placeholder="Rating (1-5)">
+        </div>
+      </div>
+      <div class="form-group" style="margin:0">
+        <textarea class="form-textarea" data-field="reviewBody" rows="2" placeholder="Review text…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin:0">
+          <input type="date" class="form-input" data-field="reviewDate">
+        </div>
+        <div class="form-group" style="margin:0">
+          <input type="text" class="form-input" data-field="reviewPublisher" placeholder="Publisher (e.g. TechRadar)">
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-remove" onclick="removeRow(this)" title="Remove">&times;</button>`;
+  list.appendChild(row);
+}
+
+function removeRow(btn) {
+  const row = btn.closest('.dynamic-row');
+  const list = row.parentElement;
+  if (list.children.length <= 1) return;
+  row.remove();
+  renumberRows(list);
+}
+
+function renumberRows(list) {
+  Array.from(list.children).forEach((row, i) => {
+    row.dataset.index = i;
+    row.querySelector('.row-num').textContent = String(i + 1).padStart(2, '0');
+  });
+}
+
+// ── Schema builders ──
+function buildLocalBusiness(form) {
+  const sameAsRaw = val(form, 'sameAs');
+  const sameAs = sameAsRaw ? sameAsRaw.split('\n').map(s => s.trim()).filter(Boolean) : undefined;
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": val(form, 'type'),
+    name: val(form, 'name'),
+    description: val(form, 'description'),
+    url: val(form, 'url'),
+    image: val(form, 'image'),
+    telephone: val(form, 'telephone'),
+    email: val(form, 'email'),
+    priceRange: val(form, 'priceRange'),
+    openingHours: val(form, 'openingHours') || undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: val(form, 'streetAddress'),
+      addressLocality: val(form, 'city'),
+      addressRegion: val(form, 'region'),
+      postalCode: val(form, 'postalCode'),
+      addressCountry: val(form, 'country')
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: val(form, 'latitude') ? parseFloat(val(form, 'latitude')) : undefined,
+      longitude: val(form, 'longitude') ? parseFloat(val(form, 'longitude')) : undefined
+    },
+    sameAs: sameAs && sameAs.length ? sameAs : undefined
+  };
+  return clean(schema);
+}
+
+function buildOrganization(form) {
+  const sameAsRaw = val(form, 'sameAs');
+  const sameAs = sameAsRaw ? sameAsRaw.split('\n').map(s => s.trim()).filter(Boolean) : undefined;
+  const langRaw = val(form, 'availableLanguage');
+  const langs = langRaw ? langRaw.split(',').map(s => s.trim()).filter(Boolean) : undefined;
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": val(form, 'type'),
+    name: val(form, 'name'),
+    description: val(form, 'description'),
+    url: val(form, 'url'),
+    logo: val(form, 'logo'),
+    telephone: val(form, 'telephone'),
+    email: val(form, 'email'),
+    foundingDate: val(form, 'foundingDate'),
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: val(form, 'contactType'),
+      telephone: val(form, 'contactPhone'),
+      email: val(form, 'contactEmail'),
+      availableLanguage: langs && langs.length ? langs : undefined
+    },
+    sameAs: sameAs && sameAs.length ? sameAs : undefined
+  };
+  return clean(schema);
+}
+
+function buildService(form) {
+  const areasRaw = val(form, 'areaServed');
+  const areas = areasRaw ? areasRaw.split(',').map(s => s.trim()).filter(Boolean) : undefined;
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: val(form, 'name'),
+    description: val(form, 'description'),
+    serviceType: val(form, 'serviceType'),
+    category: val(form, 'category'),
+    url: val(form, 'url'),
+    image: val(form, 'image'),
+    areaServed: areas && areas.length === 1 ? areas[0] : (areas && areas.length > 1 ? areas : undefined),
+    provider: {
+      "@type": "Organization",
+      name: val(form, 'providerName'),
+      url: val(form, 'providerUrl')
+    },
+    offers: {
+      "@type": "Offer",
+      price: val(form, 'price'),
+      priceCurrency: val(form, 'currency'),
+      priceValidUntil: val(form, 'priceValidUntil')
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: val(form, 'ratingValue') ? parseFloat(val(form, 'ratingValue')) : undefined,
+      reviewCount: val(form, 'reviewCount') ? parseInt(val(form, 'reviewCount'), 10) : undefined,
+      bestRating: val(form, 'bestRating') ? parseInt(val(form, 'bestRating'), 10) : undefined
+    }
+  };
+  return clean(schema);
+}
+
+function buildFaq(form) {
+  const rows = form.querySelectorAll('#faq-list .dynamic-row');
+  const mainEntity = [];
+  rows.forEach(row => {
+    const q = row.querySelector('[data-field="question"]').value.trim();
+    const a = row.querySelector('[data-field="answer"]').value.trim();
+    const answerUrl = row.querySelector('[data-field="answerUrl"]').value.trim();
+    const dateCreated = row.querySelector('[data-field="dateCreated"]').value.trim();
+    if (q && a) {
+      const questionObj = {
+        "@type": "Question",
+        name: q,
+        dateCreated: dateCreated || undefined,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: a,
+          url: answerUrl || undefined,
+          dateCreated: dateCreated || undefined
+        }
+      };
+      mainEntity.push(questionObj);
+    }
+  });
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    name: val(form, 'pageName'),
+    description: val(form, 'pageDescription'),
+    url: val(form, 'pageUrl'),
+    lastReviewed: val(form, 'lastReviewed'),
+    mainEntity: mainEntity.length ? mainEntity : undefined
+  };
+  return clean(schema);
+}
+
+function buildBreadcrumb(form) {
+  const rows = form.querySelectorAll('#breadcrumb-list .dynamic-row');
+  const items = [];
+  rows.forEach((row, i) => {
+    const name = row.querySelector('[data-field="name"]').value.trim();
+    const url = row.querySelector('[data-field="url"]').value.trim();
+    if (name && url) {
+      items.push({
+        "@type": "ListItem",
+        position: i + 1,
+        name: name,
+        item: url
+      });
+    }
+  });
+  return clean({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.length ? items : undefined
+  });
+}
+
+function buildProduct(form) {
+  // Images
+  const imagesRaw = val(form, 'images');
+  let images;
+  if (imagesRaw) {
+    const arr = imagesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+    images = arr.length === 1 ? arr[0] : (arr.length > 1 ? arr : undefined);
+  }
+
+  // Pros
+  const prosRows = form.querySelectorAll('#pros-list .dynamic-row');
+  const pros = [];
+  prosRows.forEach(row => {
+    const v = row.querySelector('[data-field="pro"]').value.trim();
+    if (v) pros.push({ "@type": "ListItem", position: pros.length + 1, name: v });
+  });
+
+  // Cons
+  const consRows = form.querySelectorAll('#cons-list .dynamic-row');
+  const cons = [];
+  consRows.forEach(row => {
+    const v = row.querySelector('[data-field="con"]').value.trim();
+    if (v) cons.push({ "@type": "ListItem", position: cons.length + 1, name: v });
+  });
+
+  // Reviews
+  const reviewRows = form.querySelectorAll('#reviews-list .dynamic-row');
+  const reviews = [];
+  reviewRows.forEach(row => {
+    const author = row.querySelector('[data-field="reviewAuthor"]').value.trim();
+    const rating = row.querySelector('[data-field="reviewRating"]').value.trim();
+    const body = row.querySelector('[data-field="reviewBody"]').value.trim();
+    const date = row.querySelector('[data-field="reviewDate"]').value.trim();
+    const publisher = row.querySelector('[data-field="reviewPublisher"]').value.trim();
+    if (author || body) {
+      const review = {
+        "@type": "Review",
+        author: author ? { "@type": "Person", name: author } : undefined,
+        datePublished: date || undefined,
+        reviewBody: body || undefined,
+        reviewRating: rating ? {
+          "@type": "Rating",
+          ratingValue: parseFloat(rating),
+          bestRating: 5
+        } : undefined,
+        publisher: publisher ? { "@type": "Organization", name: publisher } : undefined
+      };
+      reviews.push(review);
+    }
+  });
+
+  // Shipping
+  const shippingDetails = {
+    "@type": "OfferShippingDetails",
+    shippingRate: {
+      "@type": "MonetaryAmount",
+      value: val(form, 'shippingCost'),
+      currency: val(form, 'shippingCurrency')
+    },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: val(form, 'shippingCountry')
+    },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: undefined,
+      transitTime: {
+        "@type": "QuantitativeValue",
+        minValue: val(form, 'minDeliveryDays') ? parseInt(val(form, 'minDeliveryDays'), 10) : undefined,
+        maxValue: val(form, 'maxDeliveryDays') ? parseInt(val(form, 'maxDeliveryDays'), 10) : undefined,
+        unitCode: (val(form, 'minDeliveryDays') || val(form, 'maxDeliveryDays')) ? "DAY" : undefined
+      }
+    }
+  };
+
+  // Return policy
+  const returnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: val(form, 'shippingCountry'),
+    returnPolicyCategory: val(form, 'returnPolicyType'),
+    merchantReturnDays: val(form, 'returnDays') ? parseInt(val(form, 'returnDays'), 10) : undefined,
+    returnFees: val(form, 'returnFee')
+  };
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: val(form, 'name'),
+    description: val(form, 'description'),
+    image: images,
+    url: val(form, 'url'),
+    brand: val(form, 'brand') ? { "@type": "Brand", name: val(form, 'brand') } : undefined,
+    sku: val(form, 'sku'),
+    gtin: val(form, 'gtin'),
+    mpn: val(form, 'mpn'),
+    color: val(form, 'color'),
+    material: val(form, 'material'),
+    weight: val(form, 'weight') ? { "@type": "QuantitativeValue", value: val(form, 'weight') } : undefined,
+    offers: {
+      "@type": "Offer",
+      url: val(form, 'offerUrl'),
+      price: val(form, 'price'),
+      priceCurrency: val(form, 'currency'),
+      priceValidUntil: val(form, 'priceValidUntil'),
+      availability: val(form, 'availability'),
+      itemCondition: val(form, 'condition'),
+      seller: val(form, 'sellerName') ? {
+        "@type": "Organization",
+        name: val(form, 'sellerName'),
+        url: val(form, 'sellerUrl')
+      } : undefined,
+      shippingDetails: clean(shippingDetails),
+      hasMerchantReturnPolicy: clean(returnPolicy)
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: val(form, 'ratingValue') ? parseFloat(val(form, 'ratingValue')) : undefined,
+      reviewCount: val(form, 'reviewCount') ? parseInt(val(form, 'reviewCount'), 10) : undefined,
+      bestRating: val(form, 'bestRating') ? parseInt(val(form, 'bestRating'), 10) : undefined
+    },
+    review: reviews.length ? (reviews.length === 1 ? reviews[0] : reviews) : undefined,
+    positiveNotes: pros.length ? {
+      "@type": "ItemList",
+      itemListElement: pros
+    } : undefined,
+    negativeNotes: cons.length ? {
+      "@type": "ItemList",
+      itemListElement: cons
+    } : undefined
+  };
+  return clean(schema);
+}
+
+function buildArticle(form) {
+  const authorType = val(form, 'authorType') || 'Person';
+  const author = {
+    "@type": authorType,
+    name: val(form, 'authorName'),
+    url: val(form, 'authorUrl'),
+    jobTitle: authorType === 'Person' ? (val(form, 'authorJobTitle') || undefined) : undefined
+  };
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": val(form, 'type'),
+    headline: val(form, 'headline'),
+    description: val(form, 'description'),
+    image: val(form, 'image'),
+    url: val(form, 'url'),
+    inLanguage: val(form, 'inLanguage'),
+    keywords: val(form, 'keywords'),
+    wordCount: val(form, 'wordCount') ? parseInt(val(form, 'wordCount'), 10) : undefined,
+    articleSection: val(form, 'articleSection'),
+    author: clean(author),
+    publisher: {
+      "@type": "Organization",
+      name: val(form, 'publisherName'),
+      url: val(form, 'publisherUrl'),
+      logo: val(form, 'publisherLogo') ? {
+        "@type": "ImageObject",
+        url: val(form, 'publisherLogo')
+      } : undefined
+    },
+    datePublished: val(form, 'datePublished'),
+    dateModified: val(form, 'dateModified')
+  };
+  return clean(schema);
+}
+
+// ── Generate ──
+function buildSchemaData(schema) {
+  const form = document.getElementById('form-' + schema);
+  switch (schema) {
+    case 'localbusiness': return buildLocalBusiness(form);
+    case 'organization': return buildOrganization(form);
+    case 'service': return buildService(form);
+    case 'faq': return buildFaq(form);
+    case 'breadcrumb': return buildBreadcrumb(form);
+    case 'product': return buildProduct(form);
+    case 'article': return buildArticle(form);
+  }
+  return null;
+}
+
+function generate(schema) {
+  const form = document.getElementById('form-' + schema);
+  if (!validate(form)) return;
+
+  let data;
+  switch (schema) {
+    case 'localbusiness': data = buildLocalBusiness(form); break;
+    case 'organization': data = buildOrganization(form); break;
+    case 'service': data = buildService(form); break;
+    case 'faq': data = buildFaq(form); break;
+    case 'breadcrumb': data = buildBreadcrumb(form); break;
+    case 'product': data = buildProduct(form); break;
+    case 'article': data = buildArticle(form); break;
+  }
+  if (!data) return;
+
+  rawJson = JSON.stringify(data, null, 2);
+  lastSchemaType = data['@type'] || schema;
+  lastSchemaData = data;
+  isCombined = false;
+  renderOutput();
+  showStats(data);
+  // Show combine + test buttons
+  document.getElementById('btnCombine').classList.remove('hidden');
+  document.getElementById('btnTestGoogle').classList.remove('hidden');
+}
+
+// ── Stats ──
+function showStats(data) {
+  const isArr = Array.isArray(data);
+  const props = isArr ? data.reduce((s,d) => s + countProps(d), 0) : countProps(data);
+  const typeLabel = isArr ? data.map(d => d['@type'] || '?').join(' + ') : (data['@type'] || '?');
+  const statsEl = document.getElementById('outputStats');
+  let html = `
+    <span class="stat stat-type">@type: ${escapeHtml(typeLabel)}</span>
+    <span class="stat stat-props">${props} properties</span>
+    <span class="stat stat-valid">Valid JSON-LD</span>
+  `;
+  if (isCombined) html += '<span class="stat stat-combined">Combined</span>';
+  statsEl.innerHTML = html;
+}
+
+// ── Render ──
+function renderOutput() {
+  const output = document.getElementById('output');
+  const wrap = document.getElementById('wrapToggle').checked;
+  let display = rawJson;
+  if (wrap) {
+    display = `<script type="application/ld+json">\n${rawJson}\n<\/script>`;
+  }
+  output.innerHTML = highlightJson(display, wrap);
+}
+
+document.getElementById('wrapToggle').addEventListener('change', () => {
+  if (rawJson) renderOutput();
+});
+
+function highlightJson(str, hasScriptTag) {
+  if (hasScriptTag) {
+    const lines = str.split('\n');
+    const scriptOpen = escapeHtml(lines[0]);
+    const scriptClose = escapeHtml(lines[lines.length - 1]);
+    const jsonContent = lines.slice(1, -1).join('\n');
+    return `<span class="json-bracket">${scriptOpen}</span>\n${syntaxHighlight(jsonContent)}\n<span class="json-bracket">${scriptClose}</span>`;
+  }
+  return syntaxHighlight(str);
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function syntaxHighlight(json) {
+  json = escapeHtml(json);
+  return json.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    function(match) {
+      let cls = 'json-number';
+      if (/^"/.test(match)) {
+        cls = /:$/.test(match) ? 'json-key' : 'json-string';
+      } else if (/true|false/.test(match)) {
+        cls = 'json-bool';
+      } else if (/null/.test(match)) {
+        cls = 'json-null';
+      }
+      return `<span class="${cls}">${match}</span>`;
+    }
+  );
+}
+
+// ── Copy ──
+function copyOutput() {
+  if (!rawJson) return;
+  const wrap = document.getElementById('wrapToggle').checked;
+  let text = rawJson;
+  if (wrap) {
+    text = `<script type="application/ld+json">\n${rawJson}\n<\/script>`;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    const txt = document.getElementById('copyText');
+    btn.classList.add('copied');
+    txt.textContent = 'Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      txt.textContent = 'Copy';
+    }, 2000);
+  });
+}
+
+// ── Download ──
+function downloadJson() {
+  if (!rawJson) return;
+  const blob = new Blob([rawJson], { type: 'application/ld+json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `schema-${lastSchemaType.toLowerCase()}.jsonld`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── Combine schemas ──
+function toggleCombineDropdown() {
+  document.getElementById('combineDropdown').classList.toggle('open');
+}
+function closeCombineDropdown() {
+  const dd = document.getElementById('combineDropdown');
+  if (dd) dd.classList.remove('open');
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.combine-wrap')) closeCombineDropdown();
+});
+
+function combineWith(secondSchema) {
+  closeCombineDropdown();
+  if (!lastSchemaData) return;
+  const secondData = buildSchemaData(secondSchema);
+  if (!secondData) return;
+  // Remove @context from second, keep on first
+  const first = { ...lastSchemaData };
+  const second = { ...secondData };
+  delete second['@context'];
+  const combined = [first, second];
+  rawJson = JSON.stringify(combined, null, 2);
+  isCombined = true;
+  renderOutput();
+  showStats(combined);
+}
+
+// ── localStorage persistence ──
+function saveFormToStorage(schemaId) {
+  const form = document.getElementById('form-' + schemaId);
+  if (!form) return;
+  const data = {};
+  form.querySelectorAll('[data-field]').forEach(el => {
+    data[el.dataset.field] = el.value;
+  });
+  try {
+    localStorage.setItem('schema-gen-' + schemaId, JSON.stringify(data));
+  } catch(e) {}
+  // Show saved indicator
+  const indicator = document.querySelector(`[data-saved="${schemaId}"]`);
+  if (indicator) {
+    indicator.classList.add('show');
+    clearTimeout(indicator._timeout);
+    indicator._timeout = setTimeout(() => indicator.classList.remove('show'), 1500);
+  }
+}
+
+function restoreFormFromStorage(schemaId) {
+  try {
+    const raw = localStorage.getItem('schema-gen-' + schemaId);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    const form = document.getElementById('form-' + schemaId);
+    if (!form) return;
+    for (const [field, value] of Object.entries(data)) {
+      const el = form.querySelector(`[data-field="${field}"]`);
+      if (el && value) el.value = value;
+    }
+  } catch(e) {}
+}
+
+// Restore all forms on load
+SCHEMA_NAMES.forEach(s => restoreFormFromStorage(s));
+
+// ── Schema Validator ──
+function runValidator() {
+  const input = document.getElementById('validatorInput').value.trim();
+  const resultsEl = document.getElementById('validatorResults');
+  if (!input) {
+    resultsEl.innerHTML = '<div class="validator-item fail"><span class="validator-icon">✗</span>No input provided. Paste JSON-LD above.</div>';
+    return;
+  }
+
+  const checks = [];
+  let parsed = null;
+
+  // 1. Valid JSON
+  try {
+    parsed = JSON.parse(input);
+    checks.push({ pass: true, msg: 'Valid JSON syntax' });
+  } catch(e) {
+    const match = e.message.match(/position\s+(\d+)/i);
+    let detail = e.message;
+    if (match) {
+      const pos = parseInt(match[1], 10);
+      const before = input.substring(0, pos);
+      const line = before.split('\n').length;
+      const col = pos - before.lastIndexOf('\n');
+      detail = `${e.message} (line ${line}, col ${col})`;
+    }
+    checks.push({ pass: false, msg: 'Invalid JSON syntax: ' + detail });
+    renderValidatorResults(checks, resultsEl);
+    return;
+  }
+
+  // 2. @context
+  const ctx = parsed['@context'];
+  if (ctx === 'https://schema.org' || ctx === 'http://schema.org') {
+    checks.push({ pass: true, msg: '@context is set to schema.org' });
+  } else {
+    checks.push({ pass: false, msg: '@context should be "https://schema.org"' + (ctx ? ' (found: "' + ctx + '")' : ' (missing)') });
+  }
+
+  // 3. @type
+  const schemaType = parsed['@type'];
+  if (schemaType) {
+    checks.push({ pass: true, msg: '@type is set: "' + schemaType + '"' });
+  } else {
+    checks.push({ pass: false, msg: '@type is missing' });
+    renderValidatorResults(checks, resultsEl);
+    return;
+  }
+
+  // 4. Required properties per @type
+  const requiredMap = {
+    'LocalBusiness': ['name', 'url'],
+    'Organization': ['name', 'url'],
+    'Corporation': ['name', 'url'],
+    'Service': ['name', 'description'],
+    'FAQPage': ['mainEntity'],
+    'BreadcrumbList': ['itemListElement'],
+    'Product': ['name', 'offers'],
+    'Article': ['headline', 'author', 'datePublished'],
+    'NewsArticle': ['headline', 'author', 'datePublished'],
+    'BlogPosting': ['headline', 'author', 'datePublished'],
+    'TechArticle': ['headline', 'author', 'datePublished']
+  };
+
+  const reqs = requiredMap[schemaType];
+  if (reqs) {
+    reqs.forEach(prop => {
+      const val = parsed[prop];
+      if (prop === 'mainEntity') {
+        if (Array.isArray(val) && val.length > 0) {
+          // Check each has @type Question + acceptedAnswer
+          let allValid = true;
+          val.forEach((item, i) => {
+            if (item['@type'] !== 'Question' || !item.acceptedAnswer) allValid = false;
+          });
+          checks.push(allValid
+            ? { pass: true, msg: 'mainEntity has ' + val.length + ' valid Question items' }
+            : { pass: false, msg: 'mainEntity items must have @type "Question" and "acceptedAnswer"' }
+          );
+        } else {
+          checks.push({ pass: false, msg: 'Required: "mainEntity" must be an array with at least 1 item' });
+        }
+      } else if (prop === 'itemListElement') {
+        if (Array.isArray(val) && val.length > 0) {
+          checks.push({ pass: true, msg: 'itemListElement has ' + val.length + ' items' });
+        } else {
+          checks.push({ pass: false, msg: 'Required: "itemListElement" must be an array with at least 1 item' });
+        }
+      } else if (val !== undefined && val !== null && val !== '') {
+        if (typeof val === 'object') {
+          checks.push({ pass: true, msg: 'Required property "' + prop + '" is present' });
+        } else {
+          checks.push({ pass: true, msg: 'Required property "' + prop + '" = "' + String(val).substring(0, 60) + '"' });
+        }
+      } else {
+        checks.push({ pass: false, msg: 'Missing required property: "' + prop + '"' });
+      }
+    });
+  } else {
+    checks.push({ pass: true, msg: 'No specific required properties defined for @type "' + schemaType + '" — general checks applied' });
+  }
+
+  // 5. Warnings for recommended fields
+  const warningMap = {
+    'LocalBusiness': ['telephone', 'address', 'image'],
+    'Product': ['image', 'aggregateRating'],
+    'Article': ['image', 'publisher'],
+    'NewsArticle': ['image', 'publisher'],
+    'BlogPosting': ['image', 'publisher'],
+    'TechArticle': ['image', 'publisher']
+  };
+  const warns = warningMap[schemaType];
+  if (warns) {
+    warns.forEach(prop => {
+      const val = parsed[prop];
+      if (!val || (typeof val === 'object' && Object.keys(val).length === 0)) {
+        checks.push({ warn: true, msg: 'Recommended property missing: "' + prop + '"' });
+      }
+    });
+  }
+
+  renderValidatorResults(checks, resultsEl);
+}
+
+function renderValidatorResults(checks, container) {
+  let passed = 0;
+  let total = 0;
+  let html = '';
+
+  checks.forEach(c => {
+    if (c.warn) {
+      html += `<div class="validator-item warn"><span class="validator-icon">!</span>${escapeHtml(c.msg)}</div>`;
+    } else {
+      total++;
+      if (c.pass) { passed++; html += `<div class="validator-item pass"><span class="validator-icon">✓</span>${escapeHtml(c.msg)}</div>`; }
+      else { html += `<div class="validator-item fail"><span class="validator-icon">✗</span>${escapeHtml(c.msg)}</div>`; }
+    }
+  });
+
+  // Score
+  const pct = total > 0 ? Math.round((passed / total) * 100) : 0;
+  const cls = pct >= 80 ? 'green' : (pct >= 50 ? 'yellow' : 'red');
+  html += `<div class="validator-score ${cls}">${passed} / ${total} checks passed (${pct}%)</div>`;
+  html += `<div style="margin-top:.75rem"><a class="btn-sm" href="https://search.google.com/test/rich-results" target="_blank" rel="noopener" style="text-decoration:none">Test in Google Rich Results &#x2197;</a></div>`;
+
+  container.innerHTML = html;
+}
+
+function clearValidator() {
+  document.getElementById('validatorInput').value = '';
+  document.getElementById('validatorResults').innerHTML = '';
+}
+
+// Drag & drop for validator
+const validatorDrop = document.getElementById('validatorDropZone');
+const validatorInput = document.getElementById('validatorInput');
+
+['dragover','dragenter'].forEach(evt => {
+  validatorDrop.addEventListener(evt, (e) => { e.preventDefault(); validatorInput.classList.add('dragover'); });
+  validatorInput.addEventListener(evt, (e) => { e.preventDefault(); validatorInput.classList.add('dragover'); });
+});
+['dragleave','drop'].forEach(evt => {
+  validatorDrop.addEventListener(evt, () => validatorInput.classList.remove('dragover'));
+  validatorInput.addEventListener(evt, () => validatorInput.classList.remove('dragover'));
+});
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  if (!file.name.match(/\.(json|jsonld)$/i)) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => { validatorInput.value = ev.target.result; };
+  reader.readAsText(file);
+}
+validatorDrop.addEventListener('drop', handleFileDrop);
+validatorInput.addEventListener('drop', handleFileDrop);
+</script>
+</body>
+</html>
